@@ -7,7 +7,7 @@ yuv2rgb.so: yuv2rgb.o
 	gcc -s -shared -Wl,-soname,libyuv2rgb.so -o yuv2rgb.so yuv2rgb.o
 
 yuv2rgb.o: yuv2rgb.c
-	gcc -fPIC -O3 -fomit-frame-pointer -funroll-loops -c yuv2rgb.c
+	gcc -fPIC -O3 -fomit-frame-pointer -funroll-loops -I/usr/include/python3.9 -c yuv2rgb.c
 
 clean:
 	rm -f yuv2rgb.o yuv2rgb.so

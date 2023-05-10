@@ -23,13 +23,14 @@
 # BSD license, all text above must be included in any redistribution.
 
 import atexit
-import cPickle as pickle
+import pickle
 import errno
 import fnmatch
 import io
 import os
 import os.path
 import picamera
+#import picamera2
 import pygame
 import stat
 import threading
@@ -86,7 +87,7 @@ class Button:
 	  self.fg       = None # Foreground Icon name
 	  self.callback = None # Callback function
 	  self.value    = None # Value passed to callback
-	  for key, value in kwargs.iteritems():
+	  for key, value in kwargs.items():
 	    if   key == 'color': self.color    = value
 	    elif key == 'bg'   : self.bg       = value
 	    elif key == 'fg'   : self.fg       = value
@@ -153,9 +154,9 @@ def quitCallback(): # Quit confirmation button
 def viewCallback(n): # Viewfinder buttons
 	global loadIdx, scaled, screenMode, screenModePrior, settingMode, storeMode
 
-	if n is 0:   # Gear icon (settings)
+	if n == 0:   # Gear icon (settings)
 	  screenMode = settingMode # Switch to last settings mode
-	elif n is 1: # Play icon (image playback)
+	elif n == 1: # Play icon (image playback)
 	  if scaled: # Last photo is already memory-resident
 	    loadIdx         = saveIdx
 	    screenMode      =  0 # Image playback
@@ -176,7 +177,7 @@ def doneCallback(): # Exit settings
 
 def imageCallback(n): # Pass 1 (next image), -1 (prev image) or 0 (delete)
 	global screenMode
-	if n is 0:
+	if n == 0:
 	  screenMode = 1 # Delete confirmation
 	else:
 	  showNextImage(n)
@@ -447,7 +448,7 @@ def takePicture():
 	      stat.S_IROTH | stat.S_IXOTH)
 	  except OSError as e:
 	    # errno = 2 if can't create folder
-	    print errno.errorcode[e.errno]
+	    print(errno.errorcode[e.errno])
 	    return
 
 	# If this is the first time accessing this directory,
@@ -561,7 +562,7 @@ gid = int(s) if s else os.getgid()
 
 # Buffers for viewfinder data
 rgb = bytearray(320 * 240 * 3)
-yuv = bytearray(320 * 240 * 3 / 2)
+yuv = bytearray(int(320 * 240 * 3 / 2))
 
 # Init pygame and screen
 pygame.init()
@@ -570,6 +571,7 @@ screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 
 # Init camera and set up default values
 camera            = picamera.PiCamera()
+#camera            = picamera2.Picamera2()
 atexit.register(camera.close)
 camera.resolution = sizeData[sizeMode][1]
 #camera.crop       = sizeData[sizeMode][2]
